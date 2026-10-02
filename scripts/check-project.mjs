@@ -1,0 +1,16 @@
+import { readFileSync, existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const yaml = require('../.local-tools/validation/node_modules/yaml');
+const spec = yaml.parse(readFileSync('project.yml', 'utf8'));
+const workflow = yaml.parse(readFileSync('.github/workflows/ios-build.yml', 'utf8'));
+if (spec.targets.OpenDots.type !== 'application' || spec.targets.OpenDots.platform !== 'iOS') throw Error('Missing native iOS app target');
+if (!workflow.jobs.build['runs-on'].startsWith('macos-')) throw Error('Missing macOS build runner');
+if (spec.targets.OpenDots.info.properties.NSAppTransportSecurity.NSAllowsArbitraryLoads) throw Error('Do not disable HTTPS protection globally');
+const sources = ['Models.swift','APIClient.swift','TokenStore.swift','AppStore.swift','OpenDotsApp.swift','ChatView.swift','DocumentsView.swift'];
+for (const file of sources) if (!existsSync(`Sources/${file}`)) throw Error(`Missing ${file}`);
+if (!existsSync('Sources/Assets.xcassets/AppIcon.appiconset/AppIcon.png')) throw Error('Missing app icon');
+const keys = readFileSync('Sources/TokenStore.swift','utf8');
+if (!keys.includes('kSecAttrAccessibleWhenUnlockedThisDeviceOnly')) throw Error('Token storage must remain device-only');
+console.log('Project structure, macOS workflow, app icon and secure connection configuration verified.');
+console.log('Swift compilation and XCTest require the macOS runner.');

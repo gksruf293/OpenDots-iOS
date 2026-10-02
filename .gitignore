@@ -1,0 +1,13 @@
+.local-tools/
+.build/
+build/
+DerivedData/
+*.xcresult/
+*.xcodeproj/
+*.xcworkspace/
+*.xcuserstate
+*.ipa
+*.p12
+*.mobileprovision
+.env
+.DS_Store
