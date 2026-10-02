@@ -1,0 +1,33 @@
+name: iPhone package (unsigned)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: macos-15
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate native project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Build iPhone binary
+        run: |
+          set -o pipefail
+          xcodebuild -project OpenDots.xcodeproj -scheme OpenDots -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build/Device CODE_SIGNING_ALLOWED=NO build | tee build/device-package.log
+      - name: Package for subsequent Apple signing
+        run: |
+          mkdir -p build/Unsigned/Payload
+          ditto build/Device/Build/Products/Release-iphoneos/OpenDots.app build/Unsigned/Payload/OpenDots.app
+          cd build/Unsigned
+          /usr/bin/zip -r ../OpenDots-Unsigned.ipa Payload
+      - name: Upload unsigned iPhone package
+        uses: actions/upload-artifact@v4
+        with:
+          name: OpenDots-iPhone-Unsigned
+          path: |
+            build/OpenDots-Unsigned.ipa
+            build/device-package.log
+          retention-days: 14

@@ -16,6 +16,10 @@ and device, runs XCTest, launches it in an iPhone simulator and uploads a native
 screenshot, logs, test result bundle and simulator app.
 
 The simulator ZIP and unsigned device build are **not installable iPhone IPAs**.
+The manually triggered `iPhone package (unsigned)` workflow creates
+`OpenDots-Unsigned.ipa` from the device binary. This package still needs Apple
+signing before installation; renaming or directly opening it does not install
+the app. The simulator app is never packaged as a device IPA.
 Physical-device installation needs Apple signing and provisioning. No Apple
 passwords, signing keys, connection tokens or PC conversation data belong in
 this repository. CI does not connect to the PC or use the Codex account.
