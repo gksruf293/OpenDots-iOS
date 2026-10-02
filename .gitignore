@@ -11,3 +11,11 @@ DerivedData/
 *.mobileprovision
 .env
 .DS_Store
+
+# Machine-specific helpers from the initial installation
+scripts/install-iphone-tools.ps1
+scripts/repair-iphone-tools.ps1
+scripts/reset-apple-auth.ps1
+scripts/start-altserver.ps1
+scripts/start-opendots-mobile.ps1
+scripts/start-opendots-server.ps1
